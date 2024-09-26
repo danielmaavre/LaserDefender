@@ -5,27 +5,37 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] WaveConfigSO currentWave;
+    [SerializeField] List<WaveConfigSO> waveConfigs;
+    [SerializeField] float timebetweenWaves = 0f;
+    WaveConfigSO currentWave;    
 
     void Start()
     {
-        SpawnEnemies();        
-    }
-
-    private void SpawnEnemies()
-    {
-        for (int i = 0; i < currentWave.GetEnemyCount(); i++)
-        {
-            Instantiate(
-                currentWave.GetEnemyPrefab(i),
-                currentWave.GetStartingWaypoint().position,
-                Quaternion.identity,
-                transform);                        
-        }
+       StartCoroutine(SpawnEnemyWaves());        
     }
 
     public WaveConfigSO GetCurrentWave(){
         return currentWave;
+    }    
+
+    IEnumerator SpawnEnemyWaves()
+    {        
+        foreach (WaveConfigSO wave in waveConfigs)
+        {
+            for (int i = 0; i < wave.GetEnemyCount(); i++)
+            {
+                Instantiate(
+                    wave.GetEnemyPrefab(i),
+                    wave.GetStartingWaypoint().position,
+                    Quaternion.identity,
+                    transform);  
+                yield return new WaitForSeconds(wave.GetRandomSpawnTime());                      
+            } 
+
+            yield return new WaitForSeconds(timebetweenWaves);                     
+        }
     }
+
+
 
 }

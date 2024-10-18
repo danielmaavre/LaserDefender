@@ -9,9 +9,11 @@ public class HealthScript : MonoBehaviour
     [SerializeField] ParticleSystem hitEffect;
     [SerializeField] bool applyCameraShake;
     CameraShake cameraShake;
+    AudioPlayer audioPlayer;
 
     private void Awake() {
         cameraShake = Camera.main.GetComponent<CameraShake>();
+        audioPlayer = FindObjectOfType<AudioPlayer>();
     }
 
     private void OnTriggerEnter2D(Collider2D other) 
@@ -23,6 +25,7 @@ public class HealthScript : MonoBehaviour
             TakeDamage(damageDealer.GetDamage());
             PlayHitEffect();
             ShakeCamera();
+            audioPlayer.PlayDamageClip();
             damageDealer.Hit();
         }        
     }
@@ -41,7 +44,7 @@ public class HealthScript : MonoBehaviour
         if(hitEffect != null)
         {
             ParticleSystem instance = Instantiate(hitEffect, transform.position, Quaternion.identity);
-            Destroy(instance.gameObject, instance.main.duration + instance.main.startLifetime.constantMax);
+            Destroy(instance.gameObject, instance.main.duration + instance.main.startLifetime.constantMax);            
         }
     }
 
